@@ -1911,20 +1911,10 @@ function Home() {
       </section>
 
       <section id="stats">
-        <div className="container">
-          <div className="row">
-            <div className="stats__wrapper">
-              <StatsSection
-                targetCount={1017}
-                subheader={"accessible Pokemon"}
-              />
-              <StatsSection
-                targetCount={300}
-                subheader={"API calls each week"}
-              />
-              <StatsSection targetCount={200000} subheader={"users served"} />
-            </div>
-          </div>
+        <div className="stats__wrapper--home">
+          <StatsSection targetCount={1017} subheader={"accessible Pokemon"} />
+          <StatsSection targetCount={300} subheader={"API calls each day"} />
+          <StatsSection targetCount={200000} subheader={"users served"} />
         </div>
       </section>
     </>

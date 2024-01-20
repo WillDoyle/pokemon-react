@@ -129,11 +129,22 @@ header {
   height: 100px;
 }
 input[type="range"] {
-  width: 200px;
-  margin: 10px 0;
-
   border-radius: 50px;
   cursor: pointer;
+  background-color: transparent;
+  overflow: hidden;
+  -webkit-appearance: none;
+  padding: 0.25em;
+  border: 1px solid #0000001e;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  width: 10px;
+  -webkit-appearance: none;
+  height: 10px;
+  border-radius: 50%;
+  cursor: ew-resize;
+  background: #e86427c1;
 }
 
 .slider__header {
@@ -904,6 +915,7 @@ option {
   height: auto;
   width: 350px;
   padding-right: 3em;
+  margin: 11.5em 0em;
 }
 
 .selected__pokemon {
@@ -1029,7 +1041,6 @@ option {
 }
 
 .loading--spinner {
-  display: none;
   width: 100%;
   height: 30vh;
 }
@@ -1053,7 +1064,6 @@ option {
   justify-content: center;
   width: 20px;
   height: 20px;
-  color: #44000d;
 
   border-radius: 10px;
   margin-right: 0.25em;
@@ -1061,7 +1071,9 @@ option {
 
 .filter__item {
   display: flex;
+  justify-content: flex-start;
   align-items: center;
+  text-align: left;
   font-family: "Poppins";
   font-size: 0.75em;
 }
@@ -1069,19 +1081,32 @@ option {
 .filter__item:hover {
   background-color: #24242417;
 }
+
+.material-symbols-outlined {
+  margin: 0em 0.25em;
+}
+
+.flip {
+  transform: scaleX(-1);
+}
+
+.reverse {
+  transform: scaleY(-1);
+}
 .filter__dropdown {
   position: absolute;
-  top: 50px;
+  top: 60px;
   z-index: 4;
-  left: 65px;
-  display: none;
+  left: 0px;
   list-style: none;
   margin: 0;
   padding: 0;
   position: absolute;
   background-color: #fff;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  overflow: hidden;
+  width: 200px;
+  border-radius: 16px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 

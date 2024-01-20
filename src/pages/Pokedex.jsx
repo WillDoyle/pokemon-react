@@ -5,6 +5,7 @@ import "../styling/Pokedex.css";
 import { useLocation } from "react-router-dom";
 
 import pokeballLogo from "../assets/pokeball-logo.png";
+import loadingPokeball from "../assets/pokeball.svg";
 
 const Pokedex = () => {
   const location = useLocation();
@@ -14,9 +15,12 @@ const Pokedex = () => {
   const [pokemonArray, setPokemonArray] = useState([]);
   const [typeNames, setTypeNames] = useState([]);
   const [pokemonStats, setStats] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const [selectedPokemon, setSelectedPokemon] = useState([]);
   const [pokemonId, setPokemonId] = useState();
+  const [filterMenu, setFilterMenu] = useState(false);
+  const [pokemonRange, setPokemonRange] = useState([]);
 
   useEffect(() => {
     const query = location.search.replace("?query=", "");
@@ -29,6 +33,10 @@ const Pokedex = () => {
       getPokemonList();
     }
   }, []);
+
+  useEffect(() => {
+    getPokemonList();
+  }, [pokemonRange]);
 
   useEffect(() => {
     findItemById(pokemonArray, pokemonId);
@@ -46,8 +54,6 @@ const Pokedex = () => {
         selectedPokemon.stats.map((stat) => [stat.stat.name, stat.base_stat])
       );
     }
-    console.log(typeNames);
-    console.log(pokemonStats);
   }, [selectedPokemon]);
 
   useEffect(() => {
@@ -144,8 +150,14 @@ const Pokedex = () => {
   }
 
   async function getPokemonList() {
-    const pokemonList = new Array(21).fill(1).map((_, index) => index + 1);
+    var pokemonList = [];
+    setLoading(true);
 
+    if (pokemonRange.length > 0) {
+      pokemonList = pokemonRange;
+    } else {
+      pokemonList = new Array(21).fill(1).map((_, index) => index + 1);
+    }
     try {
       const data = await Promise.all(
         pokemonList.map((pokemon) =>
@@ -155,6 +167,7 @@ const Pokedex = () => {
 
       const transformedData = data.map((item) => item.data);
       setPokemonArray(transformedData);
+      setLoading(false);
     } catch (error) {
       console.log(error.response);
     }
@@ -181,6 +194,87 @@ const Pokedex = () => {
     }
   }
 
+  function toggleDropMenu(filterMenu) {
+    setFilterMenu(!filterMenu);
+  }
+
+  async function filterPokemon(filter) {
+    if (filter === "LOW_TO_HIGH") {
+      sortPokemonById(pokemonArray, "asc");
+    } else if (filter === "HIGH_TO_LOW") {
+      sortPokemonById(pokemonArray, "desc");
+    } else if (filter === "A-Z") {
+      const sortedPokemonList = sortPokemonAlphabetically(pokemonArray, filter);
+      setPokemonArray(sortedPokemonList);
+    } else if (filter === "Z-A") {
+      const sortedPokemonList = sortPokemonAlphabetically(pokemonArray, filter);
+      setPokemonArray(sortedPokemonList);
+    }
+  }
+
+  function sortPokemonAlphabetically(results, order) {
+    // Create a shallow copy of the array before sorting
+    const copy = [...results];
+
+    if (order === "A-Z") {
+      return copy.sort((a, b) => {
+        const nameA = a.name.toUpperCase();
+        const nameB = b.name.toUpperCase();
+        return nameA.localeCompare(nameB);
+      });
+    } else {
+      return copy.sort((b, a) => {
+        const nameA = a.name.toUpperCase();
+        const nameB = b.name.toUpperCase();
+        return nameA.localeCompare(nameB);
+      });
+    }
+  }
+
+  async function sortPokemonById(results, order) {
+    // Sort the array based on "id"
+    const sortedPokemonList = results.sort((a, b) => {
+      if (order === "asc") {
+        return a.id - b.id;
+      } else {
+        return b.id - a.id;
+      }
+    });
+
+    return sortedPokemonList;
+  }
+
+  const [rangeValue, setRangeValue] = useState({ min: 1, max: 21 });
+
+  const updateRange = (e) => {
+    const newValue = parseInt(e.target.value, 10);
+
+    // Ensure the difference between min and max is at most 20
+    const newMaxValue = Math.min(newValue + 20, 1017); // Assuming a maximum value of 100 (adjust as needed)
+
+    setRangeValue({ min: newValue, max: newMaxValue });
+
+    const newPokemonRange = Array.from(
+      { length: newMaxValue - newValue + 1 },
+      (_, index) => newValue + index
+    );
+  };
+
+  const setRange = () => {
+    const newPokemonRange = Array.from(
+      { length: rangeValue.max - rangeValue.min + 1 },
+      (_, index) => rangeValue.min + index
+    );
+
+    setPokemonRange(newPokemonRange);
+  };
+
+  function refreshResults() {
+    setPokemonArray([]);
+    getPokemonList();
+    setPokemonRange([]);
+  }
+
   function renderPokemonDetails(pokemon) {
     return (
       <>
@@ -198,7 +292,7 @@ const Pokedex = () => {
         <div className="pokemon__img--wrapper pixel-corners--wrapper">
           <img
             className="pixel-corners"
-            src={pokemon.name && pokemon.sprites.front_default}
+            src={pokemon.sprites && pokemon.sprites.front_default}
             alt=""
           />
         </div>
@@ -238,37 +332,144 @@ const Pokedex = () => {
           </form>
         </div>
 
-        <div id="pokedex">
-          <div className="pokedex__wrapper">
-            {pokemonArray.map((pokemon) => (
-              <div className="pokemon__wrapper" key={pokemon.id}>
-                <div className="pokemon__name">
-                  <h1 className="pokemon__header">
-                    {pokemon.name.charAt(0).toUpperCase() +
-                      pokemon.name.slice(1)}
-                  </h1>
-                </div>
+        <div id="pokemon__row">
+          <div id="pokedex">
+            <div className="sort__wrapper">
+              <div className="sortby__filter">
                 <button
-                  className="pokemon__button"
-                  onClick={(e) => selectPokemon(e)}
-                ></button>
-                <div className="pokemon__img--wrapper pixel-corners--wrapper">
-                  <img
-                    src={pokemon.sprites.front_default}
-                    alt=""
-                    className="pokemon__img pixel-corners"
+                  className="select__filter"
+                  onClick={() => toggleDropMenu(filterMenu)}
+                >
+                  <span className="material-symbols-outlined filter__icon">
+                    filter_alt
+                  </span>{" "}
+                  Select filter
+                </button>
+                {filterMenu && (
+                  <ul className="filter__dropdown">
+                    <li
+                      className="filter__item"
+                      onClick={() => {
+                        filterPokemon("LOW_TO_HIGH");
+                        toggleDropMenu(filterMenu);
+                      }}
+                    >
+                      {" "}
+                      <span className="material-symbols-outlined filtered__icon reverse">
+                        sort{" "}
+                      </span>{" "}
+                      Ascending
+                    </li>
+                    <li
+                      className="filter__item"
+                      onClick={() => {
+                        filterPokemon("HIGH_TO_LOW");
+                        toggleDropMenu(filterMenu);
+                      }}
+                    >
+                      {" "}
+                      <span className="material-symbols-outlined filtered__icon">
+                        sort{" "}
+                      </span>{" "}
+                      Descending
+                    </li>
+                    <li
+                      className="filter__item"
+                      onClick={() => {
+                        filterPokemon("A-Z");
+                        toggleDropMenu(filterMenu);
+                      }}
+                    >
+                      <span className="material-symbols-outlined">
+                        sort_by_alpha
+                      </span>{" "}
+                      Alphabetical
+                    </li>
+                    <li
+                      className="filter__item"
+                      onClick={() => {
+                        filterPokemon("Z-A");
+                        toggleDropMenu(filterMenu);
+                      }}
+                    >
+                      {" "}
+                      <span className="material-symbols-outlined flip">
+                        sort_by_alpha
+                      </span>
+                      Reverse Alphabetical
+                    </li>
+                  </ul>
+                )}
+
+                <div className="range__filter">
+                  <input
+                    type="range"
+                    className="range__input"
+                    min={1}
+                    max={1017}
+                    onChange={updateRange}
+                    onMouseUp={setRange}
                   />
-                </div>
-                <div className="pokemon__id">
-                  <h1 className="pokemon__id">#{pokemon.id}</h1>
+                  <div className="ranges">
+                    <p className="range__value">{rangeValue.min}</p>
+                    <p className="range__value">{rangeValue.max}</p>
+                  </div>
                 </div>
               </div>
-            ))}
-          </div>
+              <button
+                onClick={() => refreshResults()}
+                className="refresh__button"
+              >
+                <span className="material-symbols-outlined white">
+                  {" "}
+                  refresh{" "}
+                </span>
+              </button>
+            </div>
 
+            <div className="pokedex__wrapper">
+              {loading ? (
+                <div className="loading--spinner">
+                  <img className="spinner__img" src={loadingPokeball} alt="" />
+                  <h1>Loading...</h1>
+                </div>
+              ) : (
+                pokemonArray.map((pokemon) => (
+                  <div className="pokemon__wrapper" key={pokemon.id}>
+                    <div className="pokemon__name">
+                      <h1 className="pokemon__header">
+                        {pokemon.name.charAt(0).toUpperCase() +
+                          pokemon.name.slice(1)}
+                      </h1>
+                    </div>
+                    <button
+                      className="pokemon__button"
+                      onClick={(e) => selectPokemon(e)}
+                    ></button>
+                    <div className="pokemon__img--wrapper pixel-corners--wrapper">
+                      <img
+                        src={pokemon.sprites.front_default}
+                        alt=""
+                        className="pokemon__img pixel-corners"
+                      />
+                    </div>
+                    <div className="pokemon__id">
+                      <h1 className="pokemon__id">#{pokemon.id}</h1>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
           <div className="selected__wrapper">
             <div className="selected__pokemon">
-              {renderSelectedPokemonById(selectedPokemon)}
+              {Object.keys(selectedPokemon).length > 0 ? (
+                renderSelectedPokemonById(selectedPokemon)
+              ) : (
+                <p className="empty__select">
+                  Click any pokemon to view statistics
+                </p>
+              )}
             </div>
           </div>
         </div>
