@@ -6,6 +6,9 @@ import { useNavigate } from "react-router-dom";
 
 import pokeballLogo from "../assets/pokeball-logo.png";
 import StatsSection from "../components/StatsSection";
+import silhouetteImg from "../assets/silhouette.svg";
+import restAPI from "../assets/rest-api.svg";
+import usersImg from "../assets/user-icon.svg";
 
 function Home() {
   const [query, setQuery] = useState("");
@@ -1912,9 +1915,21 @@ function Home() {
 
       <section id="stats">
         <div className="stats__wrapper--home">
-          <StatsSection targetCount={1017} subheader={"accessible Pokemon"} />
-          <StatsSection targetCount={300} subheader={"API calls each day"} />
-          <StatsSection targetCount={200000} subheader={"users served"} />
+          <StatsSection
+            targetCount={1017}
+            subheader={"accessible Pokemon"}
+            img={silhouetteImg}
+          />
+          <StatsSection
+            targetCount={300}
+            subheader={"API calls each day"}
+            img={restAPI}
+          />
+          <StatsSection
+            targetCount={200000}
+            subheader={"users served"}
+            img={usersImg}
+          />
         </div>
       </section>
     </>

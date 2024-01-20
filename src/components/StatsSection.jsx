@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 import silhouetteImg from "../assets/silhouette.svg";
 
-const IncrementingStat = ({ targetCount, subheader }) => {
+const IncrementingStat = ({ targetCount, subheader, img }) => {
   const statHeaderRef = useRef(null);
   const [count, setCount] = useState(0);
 
@@ -49,7 +49,7 @@ const IncrementingStat = ({ targetCount, subheader }) => {
   return (
     <div className="stat">
       <div className="stat__figure">
-        <img className="stat__img" src={silhouetteImg} alt="Silhouette"></img>
+        <img className="stat__img" src={img} alt="Silhouette"></img>
       </div>
       <h2 ref={statHeaderRef} className="stat__header">
         {count.toLocaleString()}
@@ -59,8 +59,14 @@ const IncrementingStat = ({ targetCount, subheader }) => {
   );
 };
 
-const StatsSection = ({ targetCount, subheader }) => {
-  return <IncrementingStat targetCount={targetCount} subheader={subheader} />;
+const StatsSection = ({ targetCount, subheader, img }) => {
+  return (
+    <IncrementingStat
+      targetCount={targetCount}
+      subheader={subheader}
+      img={img}
+    />
+  );
 };
 
 export default StatsSection;
