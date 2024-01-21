@@ -551,10 +551,6 @@ a {
   /* background-color: yellow; */
 }
 
-.show {
-  display: flex !important;
-}
-
 .pokemon__name {
   display: flex;
   align-items: center;
@@ -988,7 +984,6 @@ option {
 }
 
 #result {
-  opacity: 0;
   position: absolute;
   top: 4em;
   left: 1em;

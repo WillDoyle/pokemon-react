@@ -6,6 +6,7 @@ import { useLocation } from "react-router-dom";
 
 import pokeballLogo from "../assets/pokeball-logo.png";
 import loadingPokeball from "../assets/pokeball.svg";
+import { search_terms } from "./Home.jsx";
 
 const Pokedex = () => {
   const location = useLocation();
@@ -22,6 +23,7 @@ const Pokedex = () => {
   const [filterMenu, setFilterMenu] = useState(false);
   const [pokemonRange, setPokemonRange] = useState([]);
   const [rangeValue, setRangeValue] = useState({ min: 1, max: 21 });
+  const [terms, setTerms] = useState([]);
 
   useEffect(() => {
     const query = location.search.replace("?q=", "");
@@ -33,7 +35,7 @@ const Pokedex = () => {
     } else {
       getPokemonList();
     }
-  }, []);
+  }, [searchQuery]);
 
   useEffect(() => {
     getPokemonList();
@@ -145,6 +147,7 @@ const Pokedex = () => {
 
       // Assuming setSinglePokemon is a function to handle the fetched data
       setSinglePokemon(data);
+      setLoading(false);
     } catch (error) {
       // Handle errors here
       console.error("Error fetching Pokemon:", error);
@@ -276,6 +279,40 @@ const Pokedex = () => {
     setPokemonRange([]);
     setRangeValue({ min: 0, max: 21 });
   }
+  function showResults(val) {
+    let terms = autocompleteMatch(val);
+
+    // Limit the number of results to the first 5
+    setTerms(terms.slice(0, 5));
+  }
+
+  function autocompleteMatch(input) {
+    if (input === "") {
+      return [];
+    }
+
+    var reg = new RegExp(input.toLowerCase());
+
+    return search_terms
+      .filter(function (term) {
+        return (
+          term.toLowerCase().match(reg) &&
+          term.toLowerCase() !== input.toLowerCase()
+        );
+      })
+      .sort(function (a, b) {
+        return a.toLowerCase().startsWith(input.toLowerCase()) ? -1 : 1;
+      });
+  }
+
+  function handleResultClick(value) {
+    updateInput(value);
+  }
+
+  function updateInput(value) {
+    document.getElementById("q").value = value;
+    setTerms([]); // Clear the terms when selecting a suggestion
+  }
 
   function renderPokemonDetails(pokemon) {
     return (
@@ -315,7 +352,6 @@ const Pokedex = () => {
           <form autoComplete="off" className="searchbar__wrapper">
             <div className="search">
               <img src={pokeballLogo} className="search__icon" alt="" />
-
               <input
                 className="player__input"
                 type="text"
@@ -323,10 +359,24 @@ const Pokedex = () => {
                 id="q"
                 placeholder="Search for pokemon"
                 contentEditable="true"
+                onKeyUp={(e) => showResults(e.target.value)}
                 onSubmit={(e) => {
-                  setSearchQuery(e.target.value);
+                  setLoading(true);
+                  e.preventDefault();
+                  fetchPokemon(e.target.value.toLowerCase());
                 }}
               />
+              <div id="result">
+                {terms.length > 0 && (
+                  <ul>
+                    {terms.map((term, i) => (
+                      <li key={i} onClick={() => handleResultClick(term)}>
+                        {term}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             </div>
             <button className="btn search__btn" type="submit">
               <span className="material-symbols-outlined brown"> search </span>
