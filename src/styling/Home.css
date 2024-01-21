@@ -3,10 +3,11 @@ body {
 }
 
 .container {
-  margin: 10em auto;
+  margin: 20em auto;
   width: 100%;
   max-width: 1200px;
   padding: 1em;
+  height: 100%;
 }
 
 .show {
@@ -34,8 +35,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #fff1b8;
   border-radius: 16px;
+  background-color: transparent;
 }
 
 .stat {
@@ -46,11 +47,9 @@ body {
   padding: 1em;
   border-radius: 16px;
   margin: 1em 1em;
-  width: 100%; /* Set width to 100% initially */
-  max-width: 200px; /* Set a maximum width */
-  height: 100%; /* Set height to 100% initially */
-  max-height: 200px; /* Set a maximum height */
-  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+  width: 250px; /* Set width to 100% initially */
+  height: 250px; /* Set a maximum height */
+  background-color: #fff1b8;
 }
 
 .stat__header {
@@ -78,10 +77,15 @@ body {
     brightness(101%) contrast(110%);
 }
 
-@media (min-width: 600px) {
+@media (max-width: 600px) {
   /* Adjust the size for larger screens if needed */
+  .stats__wrapper--home {
+    display: flex;
+    flex-direction: column;
+    background: transparent;
+  }
+
   .stat {
-    max-width: 250px;
-    max-height: 250px;
+    background-color: #fff1b8;
   }
 }

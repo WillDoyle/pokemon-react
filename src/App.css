@@ -1210,9 +1210,6 @@ footer {
   transform: translateX(24px);
 }
 @media (max-width: 932px) {
-  #landing {
-    height: fit-content;
-  }
   .landing__h1 {
     position: relative;
     margin: 0.25em 0em;
@@ -1252,7 +1249,9 @@ footer {
 
   .pikachu__model {
     left: 30%;
-    transform: translate(-50%, -50%);
+    top: 60%;
+    transform: translate(-50%, -80%);
+    width: 800px;
   }
 
   .pokedex {
