@@ -37,7 +37,8 @@ function Nav() {
           <li className="nav__link">
             <Link
               className="nav__link--anchor contact"
-              href=""
+              to="https://github.com/WillDoyle"
+              target="_blank"
               previewlistener="true"
             >
               CONTACT

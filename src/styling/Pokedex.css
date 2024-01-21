@@ -44,7 +44,9 @@
 .sort__wrapper {
   display: flex;
   justify-content: space-around;
-  margin: 2em 0em;
+  align-items: center;
+  padding: 2em 0em;
+  background-color: #f2f2f2;
 }
 
 .range__value {
@@ -114,4 +116,56 @@
   max-width: 300px;
   top: 30%;
   height: 50vh;
+}
+@media (max-width: 932px) {
+  #pokemon__row {
+    display: flex;
+    width: 100%;
+  }
+
+  #pokedex {
+    width: 50%;
+  }
+
+  .results {
+    padding: 0.5em;
+    font-size: 0.75em;
+  }
+
+  .selected__wrapper {
+    margin: 4em 1em;
+    width: 40%;
+    padding: 0;
+  }
+
+  .select__filter {
+    font-size: 0.75em;
+  }
+
+  .sort__wrapper {
+    padding: 2em 0.5em;
+  }
+}
+
+@media (max-width: 600px) {
+  .selected__pokemon {
+    height: 60vh;
+  }
+
+  #pokedex {
+    width: 50%;
+  }
+
+  .selected__wrapper {
+    width: 50%;
+  }
+
+  .sort__wrapper {
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .results {
+    margin: 0em 1em;
+  }
 }

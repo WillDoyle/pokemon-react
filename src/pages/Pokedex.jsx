@@ -256,14 +256,10 @@ const Pokedex = () => {
     const newMaxValue = Math.min(newValue + 20, 1017); // Assuming a maximum value of 100 (adjust as needed)
 
     setRangeValue({ min: newValue, max: newMaxValue });
-
-    const newPokemonRange = Array.from(
-      { length: newMaxValue - newValue + 1 },
-      (_, index) => newValue + index
-    );
   };
 
   const setRange = () => {
+    console.log(pokemonRange);
     const newPokemonRange = Array.from(
       { length: rangeValue.max - rangeValue.min + 1 },
       (_, index) => rangeValue.min + index
@@ -336,106 +332,99 @@ const Pokedex = () => {
               <span className="material-symbols-outlined brown"> search </span>
             </button>
           </form>
-          <img class="background" src={pokeballLogo} alt="" />
+          <img className="background" src={pokeballLogo} alt="" />
         </div>
 
+        <div className="sort__wrapper">
+          <div className="sortby__filter">
+            <button
+              className="select__filter"
+              onClick={() => toggleDropMenu(filterMenu)}
+            >
+              <span className="material-symbols-outlined filter__icon">
+                filter_alt
+              </span>{" "}
+              Select filter
+            </button>
+            {filterMenu && (
+              <ul className="filter__dropdown">
+                <li
+                  className="filter__item"
+                  onClick={() => {
+                    filterPokemon("LOW_TO_HIGH");
+                    toggleDropMenu(filterMenu);
+                  }}
+                >
+                  {" "}
+                  <span className="material-symbols-outlined filtered__icon reverse">
+                    sort{" "}
+                  </span>{" "}
+                  Ascending
+                </li>
+                <li
+                  className="filter__item"
+                  onClick={() => {
+                    filterPokemon("HIGH_TO_LOW");
+                    toggleDropMenu(filterMenu);
+                  }}
+                >
+                  {" "}
+                  <span className="material-symbols-outlined filtered__icon">
+                    sort{" "}
+                  </span>{" "}
+                  Descending
+                </li>
+                <li
+                  className="filter__item"
+                  onClick={() => {
+                    filterPokemon("A-Z");
+                    toggleDropMenu(filterMenu);
+                  }}
+                >
+                  <span className="material-symbols-outlined">
+                    sort_by_alpha
+                  </span>{" "}
+                  Alphabetical
+                </li>
+                <li
+                  className="filter__item"
+                  onClick={() => {
+                    filterPokemon("Z-A");
+                    toggleDropMenu(filterMenu);
+                  }}
+                >
+                  {" "}
+                  <span className="material-symbols-outlined flip">
+                    sort_by_alpha
+                  </span>
+                  Reverse Alphabetical
+                </li>
+              </ul>
+            )}
+
+            <div className="range__filter">
+              <input
+                type="range"
+                className="range__input"
+                min={1}
+                max={1017}
+                onChange={updateRange}
+                onMouseUp={setRange}
+              />
+              <div className="ranges">
+                <p className="range__value">{rangeValue.min}</p>
+                <p className="range__value">{rangeValue.max}</p>
+              </div>
+            </div>
+          </div>
+          <button onClick={() => refreshResults()} className="refresh__button">
+            <span className="material-symbols-outlined white"> refresh </span>
+          </button>
+        </div>
         <div id="pokemon__row">
           <div id="pokedex">
-            <div className="sort__wrapper">
-              <div className="sortby__filter">
-                <button
-                  className="select__filter"
-                  onClick={() => toggleDropMenu(filterMenu)}
-                >
-                  <span className="material-symbols-outlined filter__icon">
-                    filter_alt
-                  </span>{" "}
-                  Select filter
-                </button>
-                {filterMenu && (
-                  <ul className="filter__dropdown">
-                    <li
-                      className="filter__item"
-                      onClick={() => {
-                        filterPokemon("LOW_TO_HIGH");
-                        toggleDropMenu(filterMenu);
-                      }}
-                    >
-                      {" "}
-                      <span className="material-symbols-outlined filtered__icon reverse">
-                        sort{" "}
-                      </span>{" "}
-                      Ascending
-                    </li>
-                    <li
-                      className="filter__item"
-                      onClick={() => {
-                        filterPokemon("HIGH_TO_LOW");
-                        toggleDropMenu(filterMenu);
-                      }}
-                    >
-                      {" "}
-                      <span className="material-symbols-outlined filtered__icon">
-                        sort{" "}
-                      </span>{" "}
-                      Descending
-                    </li>
-                    <li
-                      className="filter__item"
-                      onClick={() => {
-                        filterPokemon("A-Z");
-                        toggleDropMenu(filterMenu);
-                      }}
-                    >
-                      <span className="material-symbols-outlined">
-                        sort_by_alpha
-                      </span>{" "}
-                      Alphabetical
-                    </li>
-                    <li
-                      className="filter__item"
-                      onClick={() => {
-                        filterPokemon("Z-A");
-                        toggleDropMenu(filterMenu);
-                      }}
-                    >
-                      {" "}
-                      <span className="material-symbols-outlined flip">
-                        sort_by_alpha
-                      </span>
-                      Reverse Alphabetical
-                    </li>
-                  </ul>
-                )}
-
-                <div className="range__filter">
-                  <input
-                    type="range"
-                    className="range__input"
-                    min={1}
-                    max={1017}
-                    onChange={updateRange}
-                    onMouseUp={setRange}
-                  />
-                  <div className="ranges">
-                    <p className="range__value">{rangeValue.min}</p>
-                    <p className="range__value">{rangeValue.max}</p>
-                  </div>
-                </div>
-              </div>
-              <button
-                onClick={() => refreshResults()}
-                className="refresh__button"
-              >
-                <span className="material-symbols-outlined white">
-                  {" "}
-                  refresh{" "}
-                </span>
-              </button>
-            </div>
-
             <div className="results">
-              {searchQuery && <h2>Showing results for: {searchQuery}</h2>}
+              {searchQuery && <h2>Showing results for: "{searchQuery}"</h2>}
             </div>
 
             <div className="pokedex__wrapper">
