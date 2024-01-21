@@ -62,7 +62,6 @@ const Pokedex = () => {
   useEffect(() => {
     setPokemonArray([]);
     renderPokemonDetails(singlePokemon);
-    console.log(singlePokemon);
   }, [singlePokemon]);
 
   useEffect(() => {
@@ -262,7 +261,6 @@ const Pokedex = () => {
   };
 
   const setRange = () => {
-    console.log(pokemonRange);
     const newPokemonRange = Array.from(
       { length: rangeValue.max - rangeValue.min + 1 },
       (_, index) => rangeValue.min + index
