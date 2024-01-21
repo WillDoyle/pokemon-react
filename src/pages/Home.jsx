@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "../styling/Home.css";
 import pikachuModel from "../assets/pikachu-3d.svg";
 import App from "../App";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import pokeballLogo from "../assets/pokeball-logo.png";
 import StatsSection from "../components/StatsSection";
@@ -1931,6 +1931,11 @@ function Home() {
             img={usersImg}
           />
         </div>
+        <a href="https://pokeapi.co/" target="_blank">
+          <p className="small__p link__hover-effect">
+            requests served by PokeAPI
+          </p>
+        </a>
       </section>
     </>
   );
