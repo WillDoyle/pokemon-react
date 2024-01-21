@@ -21,9 +21,10 @@ const Pokedex = () => {
   const [pokemonId, setPokemonId] = useState();
   const [filterMenu, setFilterMenu] = useState(false);
   const [pokemonRange, setPokemonRange] = useState([]);
+  const [rangeValue, setRangeValue] = useState({ min: 1, max: 21 });
 
   useEffect(() => {
-    const query = location.search.replace("?query=", "");
+    const query = location.search.replace("?q=", "");
     setSearchQuery(query);
 
     if (query.length > 0) {
@@ -57,6 +58,7 @@ const Pokedex = () => {
   }, [selectedPokemon]);
 
   useEffect(() => {
+    setPokemonArray([]);
     renderPokemonDetails(singlePokemon);
     console.log(singlePokemon);
   }, [singlePokemon]);
@@ -158,6 +160,7 @@ const Pokedex = () => {
     } else {
       pokemonList = new Array(21).fill(1).map((_, index) => index + 1);
     }
+
     try {
       const data = await Promise.all(
         pokemonList.map((pokemon) =>
@@ -244,9 +247,9 @@ const Pokedex = () => {
     return sortedPokemonList;
   }
 
-  const [rangeValue, setRangeValue] = useState({ min: 1, max: 21 });
-
   const updateRange = (e) => {
+    setSinglePokemon({});
+    setSearchQuery("");
     const newValue = parseInt(e.target.value, 10);
 
     // Ensure the difference between min and max is at most 20
@@ -270,14 +273,17 @@ const Pokedex = () => {
   };
 
   function refreshResults() {
+    setSearchQuery("");
     setPokemonArray([]);
+    setSinglePokemon([]);
     getPokemonList();
     setPokemonRange([]);
+    setRangeValue({ min: 0, max: 21 });
   }
 
   function renderPokemonDetails(pokemon) {
     return (
-      <>
+      <div className="pokemon__wrapper">
         <button
           className="pokemon__button"
           onClick={(e) => selectPokemon(e)}
@@ -298,7 +304,7 @@ const Pokedex = () => {
         </div>
 
         <h1 className="pokemon__id">#{pokemon.id}</h1>
-      </>
+      </div>
     );
   }
 
@@ -321,7 +327,7 @@ const Pokedex = () => {
                 id="q"
                 placeholder="Search for pokemon"
                 contentEditable="true"
-                onKeyUp={(e) => {
+                onSubmit={(e) => {
                   setSearchQuery(e.target.value);
                 }}
               />
@@ -330,6 +336,7 @@ const Pokedex = () => {
               <span className="material-symbols-outlined brown"> search </span>
             </button>
           </form>
+          <img class="background" src={pokeballLogo} alt="" />
         </div>
 
         <div id="pokemon__row">
@@ -427,12 +434,18 @@ const Pokedex = () => {
               </button>
             </div>
 
+            <div className="results">
+              {searchQuery && <h2>Showing results for: {searchQuery}</h2>}
+            </div>
+
             <div className="pokedex__wrapper">
               {loading ? (
                 <div className="loading--spinner">
                   <img className="spinner__img" src={loadingPokeball} alt="" />
                   <h1>Loading...</h1>
                 </div>
+              ) : Object.keys(singlePokemon).length > 0 ? (
+                renderPokemonDetails(singlePokemon)
               ) : (
                 pokemonArray.map((pokemon) => (
                   <div className="pokemon__wrapper" key={pokemon.id}>

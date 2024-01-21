@@ -17,7 +17,7 @@ function Home() {
   let navigate = useNavigate();
   function searchPokemonAndChangePage(event) {
     event.preventDefault();
-    navigate(`/pokedex?query=${encodeURIComponent(query)}`);
+    navigate(`/pokedex?q=${encodeURIComponent(query)}`);
   }
 
   var search_terms = [
