@@ -2,14 +2,15 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "../styling/Pokedex.css";
 
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import pokeballLogo from "../assets/pokeball-logo.png";
 import loadingPokeball from "../assets/pokeball.svg";
-import { search_terms } from "./Home.jsx";
+import { search_terms } from "../components/searchterms";
 
 const Pokedex = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
 
   const [singlePokemon, setSinglePokemon] = useState({});
@@ -31,19 +32,27 @@ const Pokedex = () => {
 
     if (query.length > 0) {
       console.log(searchQuery);
+
+      setPokemonArray([]);
+
       fetchPokemon(query.toLowerCase());
+      setLoading(false);
     } else {
       getPokemonList();
     }
-  }, [searchQuery]);
+  }, []);
 
   useEffect(() => {
-    getPokemonList();
+    const query = location.search.replace("?q=", "");
+    if (query.length === 0) {
+      console.log("running!");
+      getPokemonList();
+    }
   }, [pokemonRange]);
 
   useEffect(() => {
     findItemById(pokemonArray, pokemonId);
-  }, [pokemonId, pokemonArray]);
+  }, [pokemonId]);
 
   useEffect(() => {
     // Clear the typeNames array whenever a new Pokemon is selected
@@ -60,28 +69,35 @@ const Pokedex = () => {
   }, [selectedPokemon]);
 
   useEffect(() => {
-    setPokemonArray([]);
-    renderPokemonDetails(singlePokemon);
-  }, [singlePokemon]);
+    renderPokemonDetails(selectedPokemon);
+  }, [selectedPokemon]);
 
   useEffect(() => {
     renderSelectedPokemonById(selectedPokemon);
   }, [selectedPokemon]);
 
   function selectPokemon(e) {
-    const pokemonId = e.target.parentNode
+    const selectedpokemonId = e.target.parentNode
       .querySelector(".pokemon__id")
       .textContent.replace("#", "");
 
-    setPokemonId(parseInt(pokemonId));
+    setPokemonId(parseInt(selectedpokemonId));
   }
 
   const findItemById = (pokemonList, targetId) => {
-    for (let i = 0; i < pokemonList.length; i++) {
-      if (pokemonList[i].id === targetId) {
-        return setSelectedPokemon(pokemonList[i]);
+    if (searchQuery.length <= 0) {
+      for (let i = 0; i < pokemonList.length; i++) {
+        if (pokemonList[i].id === targetId) {
+          console.log(pokemonList[i]);
+
+          return setSelectedPokemon(pokemonList[i]);
+        }
       }
+    } else {
+      console.log("setSelectedPokemon");
+      return setSelectedPokemon(singlePokemon);
     }
+
     return null;
   };
 
@@ -146,9 +162,9 @@ const Pokedex = () => {
 
       // Assuming setSinglePokemon is a function to handle the fetched data
       setSinglePokemon(data);
-      setLoading(false);
     } catch (error) {
       // Handle errors here
+      alert("Cannot find pokemon: " + pokemon);
       console.error("Error fetching Pokemon:", error);
     }
   }
@@ -261,6 +277,8 @@ const Pokedex = () => {
   };
 
   const setRange = () => {
+    navigate("/pokedex");
+    setSearchQuery("");
     const newPokemonRange = Array.from(
       { length: rangeValue.max - rangeValue.min + 1 },
       (_, index) => rangeValue.min + index
@@ -270,6 +288,8 @@ const Pokedex = () => {
   };
 
   function refreshResults() {
+    navigate("/pokedex");
+
     setSearchQuery("");
     setPokemonArray([]);
     setSinglePokemon([]);
@@ -277,6 +297,7 @@ const Pokedex = () => {
     setPokemonRange([]);
     setRangeValue({ min: 0, max: 21 });
   }
+
   function showResults(val) {
     let terms = autocompleteMatch(val);
 
@@ -333,8 +354,9 @@ const Pokedex = () => {
             alt=""
           />
         </div>
-
-        <h1 className="pokemon__id">#{pokemon.id}</h1>
+        <div className="pokemon__id">
+          <h1 className="pokemon__id">#{pokemon.id}</h1>
+        </div>
       </div>
     );
   }

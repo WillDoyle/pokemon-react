@@ -950,6 +950,7 @@ option {
   height: 100%;
   border-radius: 15px;
   cursor: pointer;
+  z-index: 2;
 }
 
 .pokemon__button:active {
